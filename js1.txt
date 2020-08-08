@@ -1,0 +1,20 @@
+{
+	"response": "ws_csrv_list_runinfo",
+	"seqno": 2020,
+	"status": 0,
+	"message": "OK",
+	"vals": [{
+			"srvid": "test_server1",
+			"ucid": 1014,
+			"ipv4": "127.0.0.1",
+			"timelogin": "2020/6/22 17:10:48",
+			"runstrategy": 1
+		}, {
+			"srvid": "test_server2",
+			"ucid": 1015,
+			"ipv4": "127.0.0.1",
+			"timelogin": "2020/6/22 17:11:48",
+			"runstrategy": 0
+		}
+	]
+}
