@@ -4,7 +4,7 @@ test ec_json with C++ 11
 
 \author	jiangyong
 \email  kipway@outlook.com
-\date   2020.8.8
+\date   2020.8.31
 */
 
 #ifdef _WIN32
@@ -36,7 +36,7 @@ inline void prt_space(int nspace)
 
 void prtstr(const char* s, size_t size, int ntype = -1)
 {
-	std::printf("%.*s", size, s);
+	std::printf("%.*s", (int)size, s);
 	switch (ntype) {
 	case ec::json::jtype::jstring:
 		std::printf("(string)");
