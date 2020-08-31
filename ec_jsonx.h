@@ -13,7 +13,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
 简介:
-这是一个依赖的可以提出去但是使用的json解析类。
+这是一个无依赖的可以提出去单独使用的json解析类。
 扫描一遍，不拷贝内容，最快的json解析类。解析前保证json字符串里没有注释。
 
 */
