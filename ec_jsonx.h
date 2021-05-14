@@ -2,7 +2,7 @@
 \file ec_jsonx.h
 \author	jiangyong
 \email  kipway@outlook.com
-\update 2020.9.19
+\update 2021.3.15
 
 json
 	a fast json parse class
@@ -40,6 +40,35 @@ namespace ec
 			int _type;
 		};
 
+		struct t_keys {
+			const char* _ks[4] = { nullptr };
+			t_keys(const char* s1)
+			{
+				_ks[0] = s1;
+			}
+			t_keys(const char* s1, const char* s2)
+			{
+				_ks[0] = s1;
+				_ks[1] = s2;
+			}
+			t_keys(const char* s1, const char* s2, const char* s3)
+			{
+				_ks[0] = s1;
+				_ks[1] = s2;
+				_ks[2] = s3;
+			}
+			t_keys(const char* s1, const char* s2, const char* s3, const char* s4)
+			{
+				_ks[0] = s1;
+				_ks[1] = s2;
+				_ks[2] = s3;
+				_ks[3] = s4;
+			}
+			const char** operator()()
+			{
+				return _ks;
+			}
+		};
 	public:
 		std::vector<t_kv> _kvs;
 	public:
@@ -82,6 +111,18 @@ namespace ec
 			for (const auto &i : _kvs) {
 				if (i._k.ieq(key))
 					return &i._v;
+			}
+			return nullptr;
+		}
+
+		const txt* getval(const char **keys, size_t zsize)
+		{
+			size_t i, n = _kvs.size(), j;
+			for (i = 0; i < n; i++) {
+				for (j = 0; j < zsize; j++) {
+					if (_kvs[i]._k.ieq(keys[j]))
+						return &_kvs[i]._v;
+				}
 			}
 			return nullptr;
 		}
@@ -299,4 +340,82 @@ namespace ec
 			return false;
 		}
 	};//json
+
+	/*!
+	\brief update json string
+	\param sjs, in/out JSON string.
+	\param key, keyname; for example "submit"
+	\param val, value; for example "1"
+	\param ty , value type
+	\return 0:success; -1: error;
+	\remark inert if key is not exist
+	*/
+	template<class _Str = std::string>
+	int updatejson(_Str &sjs, const char* key, const char* val, ec::json::jtype ty)
+	{
+		_Str jso; //temp for out
+		ec::json js;
+		if (!js.from_str(sjs.data(), sjs.size()))
+			return -1;
+		jso.reserve(1024);
+		const ec::json::t_kv* pkv;
+
+		bool bupdate = false;
+		jso += '{';
+		for (auto i = 0u; i < js.size(); i++) {
+			pkv = js.at(i);
+			if (!pkv || pkv->_k.empty())
+				continue;
+			if (jso.size() > 1)
+				jso += ',';
+			jso += '"';
+			jso.append(pkv->_k._str, pkv->_k._size);
+			jso += "\":";
+			if (pkv->_k.ieq(key)) { // replace
+				switch (ty) {
+				case ec::json::jstring:
+					jso += '"';
+					jso.append(val);
+					jso += '"';
+					break;
+				default:
+					jso.append(val);
+					break;
+				}
+				bupdate = true;
+			}
+			else {
+				switch (pkv->_type) { //copy
+				case ec::json::jstring:
+					jso += '"';
+					jso.append(pkv->_v._str, pkv->_v._size);
+					jso += '"';
+					break;
+				default:
+					jso.append(pkv->_v._str, pkv->_v._size);
+					break;
+				}
+			}
+		}
+		if (!bupdate) { // insert
+			if (jso.size() > 1)
+				jso += ',';
+			jso += '"';
+			jso.append(key);
+			jso += "\":";
+			switch (ty) {
+			case ec::json::jstring:
+				jso += '"';
+				jso.append(val);
+				jso += '"';
+				break;
+			default:
+				jso.append(val);
+				break;
+			}
+		}
+		jso += '}';
+		sjs.swap(jso);
+		return 0;
+	}
 }// ec
